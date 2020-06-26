@@ -21,14 +21,18 @@ package org.apache.fineract.portfolio.client.domain;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ClientAddressRepository extends JpaRepository<ClientAddress, Long>, JpaSpecificationExecutor<ClientAddress> {
 
     ClientAddress findByClientId(String clientId);
 
     // ClientAddress findByAddressId(long addressId);
+    @Query("select ca from ClientAddress ca where ca.client.id = :clientId and ca.addressType =:addressType and ca.isActive =:isActive")
+    ClientAddress findByClientIdAndAddressTypeAndIsActive(@Param("clientId") final long clientId,
+            @Param("addressType") final CodeValue addressType, @Param("isActive") final boolean isActive);
 
-    ClientAddress findByClientIdAndAddressTypeAndIsActive(final long clientId, final CodeValue addressTypeId, final boolean isActive);
-
-    ClientAddress findByClientIdAndAddressId(final long clientId, final long addressId);
+    @Query("select ca from ClientAddress ca where ca.client.id = :clientId and ca.address.id = :addressId")
+    ClientAddress findByClientIdAndAddressId(@Param("clientId") final long clientId, @Param("addressId") final long addressId);
 }
